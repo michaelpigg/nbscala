@@ -1,7 +1,9 @@
 package org.netbeans.modules.scala.sbt.nodes
 
+import java.io.File
 import org.netbeans.api.project.Project
 import org.netbeans.modules.scala.sbt.project.SBTResolver
+import org.openide.filesystems.FileObject
 import org.openide.filesystems.FileUtil
 import org.openide.nodes.AbstractNode
 import org.openide.nodes.ChildFactory
@@ -31,7 +33,11 @@ private class ScopesChildFactory(project: Project, scope: String, isTest: Boolea
     val artifacts = sbtResolver.getResolvedClassPath(scope, isTest) map FileUtil.toFileObject filter { fo =>
       fo != null && FileUtil.isArchiveFile(fo)
     } map { fo =>
-      ArtifactInfo(fo.getNameExt, "", "", FileUtil.toFile(fo), null, null)
+      ArtifactInfo(fo.getNameExt, "", "", FileUtil.toFile(fo),
+        new File(fo.getPath.replace("jars", "srcs").replace(".jar", "-sources.jar")) match {
+          case f if f.exists => f
+          case _             => null
+        }, null)
     }
 
     toPopulate.addAll(java.util.Arrays.asList(artifacts.sortBy(_.name): _*))
