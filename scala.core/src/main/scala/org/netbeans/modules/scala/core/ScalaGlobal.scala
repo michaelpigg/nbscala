@@ -202,7 +202,7 @@ class ScalaGlobal(_settings: Settings, _reporter: Reporter, projectName: String 
     askForResponse(resp) { () =>
       val start = System.currentTimeMillis
       val rootScope = astVisit(source, rootTree)
-      log1.info("Visited " + source.file.file.getName + " in " + (System.currentTimeMillis - start) + "ms")
+      log1.info("Visited " + source.file.name + " in " + (System.currentTimeMillis - start) + "ms")
       if (isCancelled(source)) None else Some(rootScope)
     }
   }

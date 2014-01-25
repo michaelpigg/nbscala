@@ -52,7 +52,7 @@ class ScalaSourceFile private (val fileObject: FileObject) extends SourceFile {
 
   lazy val file: AbstractFile = {
     val javaIoFile = if (fileObject ne null) FileUtil.toFile(fileObject) else null
-    if (javaIoFile ne null) new PlainFile(javaIoFile) else new VirtualFile("<current>", "")
+    if (javaIoFile ne null) new PlainFile(javaIoFile) else new VirtualFile(fileObject.getNameExt, fileObject.getPath)
   }
 
   lazy val source = Source.create(fileObject) // if has been created, will return exi}sted one
@@ -125,7 +125,10 @@ class ScalaSourceFile private (val fileObject: FileObject) extends SourceFile {
     findLine(0, lines.length - 1) // use (lines.length - 1) instead of lines.length here
   }
 
-  override def hashCode = file.file.hashCode
+  override def hashCode = file match {
+    case pf: PlainFile   => pf.file.hashCode
+    case a => a.hashCode
+  }
 
   override def equals(that: Any) = that match {
     case that: BatchSourceFile => file.path == that.file.path && start == that.start
